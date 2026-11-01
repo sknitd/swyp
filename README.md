@@ -1,7 +1,9 @@
-# EdgeBar (independent clone)
+# Swyp
 
 Turn your Mac's **trackpad edges into volume and brightness sliders**, with
 music play/pause and haptic feedback.
+
+![Swyp control panel](screenshot.png)
 
 > **Note:** This is an independent, open-source reimplementation built for
 > learning, inspired by the commercial app **EdgeBar** by Shashank Bhardwaj
@@ -15,8 +17,13 @@ music play/pause and haptic feedback.
 |---|---|
 | Slide a finger up/down the **right edge** of the trackpad | Volume |
 | Slide a finger up/down the **left edge** | Brightness (built-in display) |
-| **Tap** an edge (no drag) | Play / Pause (Music, Spotify, Safari, …) |
+| Swipe sideways along the **bottom edge** | Skip track (Media Strip) |
+| **Double-tap the top-right corner** | Quick Mute |
+| **Tap** an edge (no drag) | Play / Pause — optional (Music, Spotify, Safari, …) |
 
+- A **menu-bar control panel** (click the `▐` icon) with **live Brightness &
+  Volume meters** and toggles for Haptic strength, Quick Mute, Media Strip,
+  Tap-to-Play/Pause, and a Sensitivity slider.
 - An on-screen **HUD slider** appears while you adjust.
 - The trackpad gives a **haptic tick** at each step.
 - Runs as a **menu-bar agent** (`▐` icon), no Dock icon.
@@ -35,7 +42,7 @@ SDK headers are required.
 ## Build
 
 ```sh
-bash build.sh          # compiles src/main.swift into EdgeBar.app
+bash build.sh          # compiles src/main.swift into Swyp.app
 ```
 
 Requires the Swift toolchain (`swiftc`) and macOS 13+.
@@ -43,7 +50,7 @@ Requires the Swift toolchain (`swiftc`) and macOS 13+.
 ## Test
 
 ```sh
-./EdgeBar.app/Contents/MacOS/EdgeBar --selftest
+./Swyp.app/Contents/MacOS/Swyp --selftest
 ```
 
 The self-test round-trips volume and brightness (saving and restoring your
@@ -53,10 +60,10 @@ renders the HUD + fires a haptic.
 ## Run
 
 ```sh
-open EdgeBar.app
+open Swyp.app
 ```
 
-Quit from the `▐` menu-bar icon → **Quit EdgeBar**.
+Quit from the `▐` menu-bar icon → **Quit Swyp**.
 
 ## Caveats
 
