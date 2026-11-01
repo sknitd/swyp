@@ -1,4 +1,7 @@
+Swyp.app/
 EdgeBar.app/
-EdgeBar.zip
+*.zip
 *.o
 .DS_Store
+panel.png
+docs_panel.png
