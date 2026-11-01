@@ -19,7 +19,8 @@ music play/pause and haptic feedback.
 | Slide a finger up/down the **left edge** | Brightness (built-in display) |
 | Swipe sideways along the **bottom edge** | Skip track (Media Strip) |
 | **Double-tap the top-right corner** | Quick Mute |
-| **Tap** an edge (no drag) | Play / Pause — optional (Music, Spotify, Safari, …) |
+| **Tap** the bottom edge | Play / Pause |
+| **Tap** a side edge (no drag) | Play / Pause — optional (Music, Spotify, Safari, …) |
 
 - A **menu-bar control panel** (click the `▐` icon) with **live Brightness &
   Volume meters** and toggles for Haptic strength, Quick Mute, Media Strip,

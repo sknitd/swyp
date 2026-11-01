@@ -237,18 +237,18 @@ final class Engine {
         if tracking == " " {
             startX = x; startY = y; anchorX = x; anchorY = y
             touchStart = Date(); moved = false; firedMediaSkip = false
-            let onRight = x > (1 - edge), onLeft = x < edge, onBottom = y < edge
+            let onRight = x > (1 - edge), onLeft = x < edge, onBottom = y < max(edge, 0.1)
             // top-right corner is reserved for quick-mute taps, not volume drags
             let topRightCorner = x > 0.9 && y > 0.9
             if topRightCorner { tracking = "C" }
+            else if onBottom && !onLeft && !onRight && Settings.shared.mediaStrip { tracking = "M" }
             else if onRight { tracking = "V"; anchorValue = Volume.shared.get() }
             else if onLeft { tracking = "B"; anchorValue = Brightness.shared.get() }
-            else if onBottom && Settings.shared.mediaStrip { tracking = "M" }
             else { tracking = "-" }   // started in the dead zone; ignore until lift
             return
         }
         let dx = x - anchorX, dy = y - anchorY
-        if abs(x - startX) > 0.01 || abs(y - startY) > 0.01 { moved = true }
+        if abs(x - startX) > 0.03 || abs(y - startY) > 0.03 { moved = true }
 
         switch tracking {
         case "V":
@@ -276,8 +276,13 @@ final class Engine {
     }
 
     func fingersLifted() {
-        let quick = Date().timeIntervalSince(touchStart) < 0.25 && !moved
-        if tracking == "C" && quick && Settings.shared.quickMute {
+        let quick = Date().timeIntervalSince(touchStart) < 0.35 && !moved
+        if tracking == "M" && quick {
+            // tap on the bottom strip -> play / pause
+            Music.shared.togglePlayPause()
+            HUD.shared.show(symbol: "⏯", value: 0.5, onLeft: false)
+            Haptic.tick()
+        } else if tracking == "C" && quick && Settings.shared.quickMute {
             // double-tap top-right corner -> toggle mute
             if Date().timeIntervalSince(lastCornerTap) < 0.45 {
                 toggleMute(); lastCornerTap = .distantPast
@@ -419,13 +424,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.title = "▐"; statusItem.button?.toolTip = "Swyp"
         statusItem.button?.target = self; statusItem.button?.action = #selector(togglePopover(_:))
         popover.contentViewController = panel
-        popover.behavior = .transient
+        // applicationDefined: stays open while the mouse moves or the HUD
+        // appears; we close it ourselves on a click outside.
+        popover.behavior = .applicationDefined
         if !Multitouch.shared.begin() { statusItem.button?.title = "▐!" }
     }
+    var outsideClick: Any?
     @objc func togglePopover(_ sender: Any?) {
         guard let b = statusItem.button else { return }
-        if popover.isShown { popover.performClose(sender); panel.stopLive() }
-        else { popover.show(relativeTo: b.bounds, of: b, preferredEdge: .minY); panel.startLive(); NSApp.activate(ignoringOtherApps: true) }
+        if popover.isShown { closePopover() }
+        else {
+            popover.show(relativeTo: b.bounds, of: b, preferredEdge: .minY); panel.startLive()
+            NSApp.activate(ignoringOtherApps: true)
+            outsideClick = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+                self?.closePopover()
+            }
+        }
+    }
+    func closePopover() {
+        popover.performClose(nil); panel.stopLive()
+        if let m = outsideClick { NSEvent.removeMonitor(m); outsideClick = nil }
     }
 }
 
